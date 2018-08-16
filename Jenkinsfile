@@ -3,7 +3,7 @@ pipeline {
   stages {
     stage('Build') {
       steps {
-        sh 'pwd; ls -ltr;'
+        git(credentialsId: 'ed', changelog: true, url: 'https://github.com/edumanig/cloudn.git', branch: 'master')
       }
     }
   }
