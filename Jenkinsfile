@@ -13,25 +13,59 @@ pipeline {
             echo 'Stage Name - Upgrade'
           }
         }
+        stage('fullcheck-before-upgrade') {
+          steps {
+            build(job: 'fullcheck-before-upgrade', propagate: true, wait: true)
+          }
+        }
         stage('transit-upgrade') {
           steps {
-            build(job: 'transit-upgrade', propagate: true, wait: true)
+            build(job: 'transit-upgrade', propagate: true)
           }
         }
       }
     }
-    stage('Report') {
+    stage('Test1') {
       parallel {
-        stage('Report') {
+        stage('Test1') {
           steps {
-            echo 'Archive Results'
+            addShortText 'Stage1 - Transit Switchover'
           }
         }
-        stage('send email') {
+        stage('transit-switchover') {
           steps {
-            emailext(attachLog: true, subject: 'transit-pipeline results', body: 'upgrade', from: 'noreply@aviatrix.com', to: 'edsel@aviatrix.com')
+            build(job: 'transit-switchover', propagate: true, wait: true)
           }
         }
+        stage('ftp-test-only') {
+          steps {
+            build(job: 'ftp-test-only', propagate: true, wait: true)
+          }
+        }
+      }
+    }
+    stage('Test2') {
+      parallel {
+        stage('Test2') {
+          steps {
+            echo 'Stage2'
+          }
+        }
+        stage('force-peering-switchover') {
+          steps {
+            build(job: 'force-peering-switchover', propagate: true, wait: true)
+          }
+        }
+        stage('spoke-switchover') {
+          steps {
+            build(job: 'spoke-switchover', propagate: true, wait: true)
+          }
+        }
+      }
+    }
+    stage('Email') {
+      steps {
+        emailext(subject: 'Transit Pipeline  - Passed 100%', body: 'Transit Switchover + Spoke Switchover', attachLog: true, to: 'edsel@aviatrix.com')
       }
     }
   }
