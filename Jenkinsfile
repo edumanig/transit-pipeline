@@ -20,7 +20,12 @@ pipeline {
         }
         stage('transit-upgrade') {
           steps {
-            build(job: 'transit-upgrade', propagate: true)
+            build(job: 'transit-upgrade', propagate: true, wait: true)
+          }
+        }
+        stage('notify-me') {
+          steps {
+            mail(subject: 'transit-pipeline [Upgrade] --- Passed 100%', body: 'Upgrade, fullcheck-before-upgrade, transit-upgrade', to: 'edsel@aviatrix.com', from: 'noreply@aviatrix.com')
           }
         }
       }
@@ -42,6 +47,11 @@ pipeline {
             build(job: 'ftp-test-only', propagate: true, wait: true)
           }
         }
+        stage('notify-me') {
+          steps {
+            mail(subject: 'transit-pipeline [Test1]', body: 'transit-switchover, ft-test-only', to: 'edsel@aviatrix.com')
+          }
+        }
       }
     }
     stage('Test2') {
@@ -61,11 +71,16 @@ pipeline {
             build(job: 'spoke-switchover', propagate: true, wait: true)
           }
         }
+        stage('notify-me') {
+          steps {
+            mail(subject: 'transit-pipeline [Test2]', body: 'force-peering-switchover, spoke-switchover')
+          }
+        }
       }
     }
     stage('Email') {
       steps {
-        emailext(subject: 'Transit Pipeline  - Passed 100%', body: 'Transit Switchover + Spoke Switchover', attachLog: true, to: 'edsel@aviatrix.com')
+        emailext(subject: 'Transit Pipeline  - Passed 100%', body: 'Transit Switchover + Spoke Switchover', attachLog: true, to: 'edsel@aviatrix.com, ')
       }
     }
   }
