@@ -73,7 +73,7 @@ pipeline {
         }
         stage('notify-me') {
           steps {
-            mail(subject: 'transit-pipeline [Test2]', body: 'force-peering-switchover, spoke-switchover')
+            mail(subject: 'transit-pipeline [Test2]', body: 'force-peering-switchover, spoke-switchover', to: 'edsel@aviatrix.com')
           }
         }
       }
