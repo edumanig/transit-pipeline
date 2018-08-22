@@ -13,6 +13,11 @@ pipeline {
             build(job: 'fullcheck-before-upgrade', propagate: true, wait: true)
           }
         }
+        stage('notify slack') {
+          steps {
+            slackSend(baseUrl: 'https://aviatrix.slack.com/services/hooks/jenkins-ci/', message: 'Transit Pipeline - fullcheck before upgrade', channel: '#sitdown', failOnError: true, teamDomain: 'aviatrix', token: 'zjC6JXcuigU1Nq0j3AoLBdci')
+          }
+        }
       }
     }
     stage('Upgrade') {
