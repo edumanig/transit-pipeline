@@ -2,8 +2,17 @@ pipeline {
   agent any
   stages {
     stage('Build') {
-      steps {
-        addBadge(icon: 'Test Icon', text: 'hello world')
+      parallel {
+        stage('Build') {
+          steps {
+            addBadge(icon: 'Test Icon', text: 'hello world')
+          }
+        }
+        stage('fullcheck-before-upgrade') {
+          steps {
+            build(job: 'fullcheck-before-upgrade', propagate: true, wait: true)
+          }
+        }
       }
     }
     stage('Upgrade') {
@@ -11,11 +20,6 @@ pipeline {
         stage('Upgrade') {
           steps {
             echo 'Stage Name - Upgrade'
-          }
-        }
-        stage('fullcheck-before-upgrade') {
-          steps {
-            build(job: 'fullcheck-before-upgrade', propagate: true, wait: true, quietPeriod: 20)
           }
         }
         stage('transit-upgrade') {
@@ -41,11 +45,8 @@ pipeline {
         stage('transit-switchover') {
           steps {
             build(job: 'transit-switchover', propagate: true, wait: true, quietPeriod: 20)
-          }
-        }
-        stage('ftp-test-only') {
-          steps {
-            build(job: 'ftp-test-only', propagate: true, wait: true, quietPeriod: 20)
+            sleep 20
+            build(job: 'ftp-test-only', propagate: true, wait: true)
           }
         }
         stage('notify-me') {
@@ -66,11 +67,8 @@ pipeline {
         stage('force-peering-switchover') {
           steps {
             build(job: 'force-peering-switchover', propagate: true, wait: true, quietPeriod: 20)
-          }
-        }
-        stage('spoke-switchover') {
-          steps {
-            build(job: 'spoke-switchover', propagate: true, wait: true, quietPeriod: 20)
+            sleep 20
+            build(job: 'spoke-switchover', propagate: true, wait: true)
           }
         }
         stage('notify-me') {
