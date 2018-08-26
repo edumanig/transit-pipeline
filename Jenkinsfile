@@ -85,8 +85,17 @@ pipeline {
       }
     }
     stage('Email') {
-      steps {
-        emailext(subject: 'Transit Pipeline  - Passed 100%', body: 'Transit Switchover + Spoke Switchover', attachLog: true, to: 'edsel@aviatrix.com, ')
+      parallel {
+        stage('Email') {
+          steps {
+            emailext(subject: 'Transit Pipeline  UserConnect-3.4.703- Passed 100%', body: 'Transit Switchover + Spoke Switchover', attachLog: true, to: 'edsel@aviatrix.com, ')
+          }
+        }
+        stage('slack') {
+          steps {
+            slackSend(message: 'Transit Switchover -  UserConnect-3.4.703- Passed 100%', baseUrl: 'https://aviatrix.slack.com/services/hooks/jenkins-ci/', channel: '#sitdown', failOnError: true, teamDomain: 'aviatrix', token: 'zjC6JXcuigU1Nq0j3AoLBdci')
+          }
+        }
       }
     }
   }
