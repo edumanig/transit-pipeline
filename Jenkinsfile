@@ -10,7 +10,6 @@ pipeline {
         }
         stage('fullcheck-before-upgrade') {
           steps {
-            build(job: 'python /home/ubuntu/python/controller-unlimited.py $controller_ip $volume_size', propagate: true, wait: true)
             build(job: 'fullcheck-before-upgrade', propagate: true, wait: true, quietPeriod: 30)
           }
         }
