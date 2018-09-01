@@ -13,11 +13,6 @@ pipeline {
             build(job: 'fullcheck-before-upgrade', propagate: true, wait: true, quietPeriod: 30)
           }
         }
-        stage('notify slack') {
-          steps {
-            slackSend(baseUrl: 'https://aviatrix.slack.com/services/hooks/jenkins-ci/', message: 'Transit Pipeline - fullcheck before upgrade', channel: '#sitdown', failOnError: true, teamDomain: 'aviatrix', token: 'zjC6JXcuigU1Nq0j3AoLBdci')
-          }
-        }
       }
     }
     stage('Stage2') {
@@ -32,11 +27,6 @@ pipeline {
           steps {
             build(job: 'transit-linux-ping', propagate: true, wait: true, quietPeriod: 10)
             build(job: 'transit-upgrade', propagate: true, quietPeriod: 30, wait: true)
-          }
-        }
-        stage('notify-me') {
-          steps {
-            mail(subject: 'transit-pipeline [Upgrade] --- Started', body: 'Upgrade, fullcheck-before-upgrade, transit-upgrade')
           }
         }
       }
@@ -58,12 +48,6 @@ pipeline {
             build(job: 'transit-linux-ping', propagate: true, wait: true, quietPeriod: 10)
           }
         }
-        stage('notify-me') {
-          steps {
-            mail(subject: 'transit-pipeline Stage3', body: 'transit-switchover, ft-test-only', to: 'edsel@aviatrix.com')
-            sleep 30
-          }
-        }
       }
     }
     stage('Stage4') {
@@ -80,24 +64,18 @@ pipeline {
             build(job: 'spoke-switchover', propagate: true, wait: true, quietPeriod: 20)
           }
         }
-        stage('notify-me') {
-          steps {
-            mail(subject: 'transit-pipeline Stage4 [Test2]', body: 'force-peering-switchover, spoke-switchover', to: 'edsel@aviatrix.com')
-            sleep 30
-          }
-        }
       }
     }
     stage('Stage5') {
       parallel {
         stage('Email') {
           steps {
-            emailext(subject: 'Transit Pipeline  UserConnect-3.4.705- Passed 100%', body: 'Transit Switchover + Spoke Switchover', attachLog: true, to: 'dltest@aviatrix.com')
+            emailext(subject: 'Transit Pipeline  - Passed 100%', body: 'Transit Switchover + Spoke Switchover', attachLog: true, to: 'edsel@aviatrix.com')
           }
         }
         stage('slack') {
           steps {
-            slackSend(message: 'Transit Switchover -  UserConnect-3.4.703- Passed 100%', baseUrl: 'https://aviatrix.slack.com/services/hooks/jenkins-ci/', channel: '#sitdown', failOnError: true, teamDomain: 'aviatrix', token: 'zjC6JXcuigU1Nq0j3AoLBdci')
+            slackSend(message: 'Transit Switchover - Passed 100%', baseUrl: 'https://aviatrix.slack.com/services/hooks/jenkins-ci/', channel: '#sitdown', failOnError: true, teamDomain: 'aviatrix', token: 'zjC6JXcuigU1Nq0j3AoLBdci')
           }
         }
       }
