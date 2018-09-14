@@ -62,6 +62,8 @@ pipeline {
             build(job: 'force-peering-switchover', propagate: true, wait: true, quietPeriod: 20)
             sleep 20
             build(job: 'spoke-switchover', propagate: true, wait: true, quietPeriod: 20)
+            sleep 30
+            build(job: 'canada-delete-create-all-peering', propagate: true, quietPeriod: 10, wait: true)
           }
         }
       }
