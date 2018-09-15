@@ -77,7 +77,7 @@ pipeline {
         }
         stage('slack') {
           steps {
-            slackSend(message: 'Transit Switchover - Passed 100%   - Please use test/Aviatrix123# for access.', baseUrl: 'https://aviatrix.slack.com/services/hooks/jenkins-ci/', channel: '#transit-switchover', failOnError: true, teamDomain: 'aviatrix', token: 'zjC6JXcuigU1Nq0j3AoLBdci')
+            slackSend(message: 'Transit Switchover - Passed 100%   - Please use aviatrix-ci/Aviatrix123# to access Jenkins', baseUrl: 'https://aviatrix.slack.com/services/hooks/jenkins-ci/', channel: '#transit-switchover', failOnError: true, teamDomain: 'aviatrix', token: 'zjC6JXcuigU1Nq0j3AoLBdci')
           }
         }
       }
